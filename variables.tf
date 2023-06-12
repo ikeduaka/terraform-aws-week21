@@ -13,6 +13,7 @@ variable "instance_type" {
   default = "t2.micro"
 }
 variable "public_subnets" {
+
   type = list(string)
   default = [
   "public_subnet_a", "public_subnet_b"]
