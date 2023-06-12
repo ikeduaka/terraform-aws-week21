@@ -14,7 +14,7 @@ variable "instance_type" {
 }
 variable "public_subnets" {
 
-  default = {
-    "public_subnet_1" = 1
-    "public_subnet_2" = 2
-  }
+  type = list(string)
+  default = [
+  "public_subnet_a", "public_subnet_b"]
+}
