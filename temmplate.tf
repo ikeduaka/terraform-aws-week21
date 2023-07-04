@@ -9,6 +9,7 @@ resource "aws_launch_template" "week21_launch_template" {
   key_name  = "jenkins-new"
   user_data = filebase64("${path.module}/user-data.sh")
 
+
   block_device_mappings {
     device_name = "/dev/sda1"
 
@@ -22,6 +23,7 @@ resource "aws_launch_template" "week21_launch_template" {
     security_groups             = [aws_default_security_group.default.id]
   }
   tags = {
+
     Name = "week21-ec2-${random_id.random.hex}"
   }
 }
@@ -34,6 +36,7 @@ resource "random_id" "random" {
 resource "aws_subnet" "public_subnet_a" {
   vpc_id            = aws_default_vpc.default.id
   cidr_block        = "172.31.96.0/20"
+
   availability_zone = "us-east-1b"
 
   tags = {
@@ -44,6 +47,7 @@ resource "aws_subnet" "public_subnet_a" {
 resource "aws_subnet" "public_subnet_b" {
   vpc_id            = aws_default_vpc.default.id
   cidr_block        = "172.31.112.0/20"
+
   availability_zone = "us-east-1c"
 
   tags = {
@@ -53,14 +57,14 @@ resource "aws_subnet" "public_subnet_b" {
 
 resource "aws_default_security_group" "default" {
   #name        = "default"
-  #description = "inbound traffic"
+  #description = "inbound traffic
   vpc_id = aws_default_vpc.default.id
-
   ingress {
     # SSH Port 22 allowed 
     from_port = 22
     to_port   = 22
     protocol  = "tcp"
+
     #security_groups = [aws_security_group.week21_lb.id]
     cidr_blocks = ["0.0.0.0/0"]
   }
@@ -86,6 +90,7 @@ resource "aws_default_security_group" "default" {
 }
 
 resource "aws_autoscaling_group" "week21_asg" {
+
   name             = "week21_asg"
   max_size         = 5
   min_size         = 3
@@ -93,6 +98,7 @@ resource "aws_autoscaling_group" "week21_asg" {
   #target_group_arns = [aws_lb_target_group.my_tg.arn]
 
   vpc_zone_identifier = [aws_subnet.public_subnet_a.id, aws_subnet.public_subnet_b.id]
+
 
   launch_template {
     id      = aws_launch_template.week21_launch_template.id

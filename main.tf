@@ -1,3 +1,4 @@
+
 # Deploy EC2 Instance using Launch Template
 
 resource "aws_launch_template" "week21_launch_template" {
@@ -22,6 +23,7 @@ resource "aws_launch_template" "week21_launch_template" {
     security_groups             = [aws_default_security_group.default.id]
   }
   tags = {
+
     Name = "week21-ec2-${random_id.random.hex}"
   }
 }
@@ -51,9 +53,11 @@ resource "aws_subnet" "public_subnet_b" {
   }
 }
 
+
 resource "aws_default_security_group" "default" {
   #name        = "default"
   #description = "inbound traffic"
+
   vpc_id = aws_default_vpc.default.id
 
   ingress {
@@ -138,3 +142,4 @@ resource "aws_default_vpc" "default" {
     cidr_block = "172.31.0.0/16"
   }
 }
+
