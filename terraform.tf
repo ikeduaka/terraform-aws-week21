@@ -23,10 +23,15 @@ terraform {
     }
   }
 }
+#terraform {
+#backend "s3" {
+#bucket = "terraform-s3-week21-ird"
+#key    = "week21/aws_state"
+#region = "us-east-1"
+#}
+#}
 terraform {
-  backend "s3" {
-    bucket = "terraform-s3-week21-ird"
-    key  = "week21/aws_state"
-    region = "us-east-1" 
+  backend "local" {
+    path = "terraform.tfstate"
   }
 }
