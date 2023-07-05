@@ -1,4 +1,3 @@
-
 # Deploy EC2 Instance using Launch Template
 
 resource "aws_launch_template" "week21_launch_template" {
@@ -9,6 +8,7 @@ resource "aws_launch_template" "week21_launch_template" {
 
   key_name  = "jenkins-new"
   user_data = filebase64("${path.module}/user-data.sh")
+
 
   block_device_mappings {
     device_name = "/dev/sda1"
@@ -36,7 +36,8 @@ resource "random_id" "random" {
 resource "aws_subnet" "public_subnet_a" {
   vpc_id            = aws_default_vpc.default.id
   cidr_block        = "172.31.96.0/20"
-  availability_zone = "us-east-1a"
+
+  availability_zone = "us-east-1b"
 
   tags = {
     Name = "public_subnet_a"
@@ -46,7 +47,8 @@ resource "aws_subnet" "public_subnet_a" {
 resource "aws_subnet" "public_subnet_b" {
   vpc_id            = aws_default_vpc.default.id
   cidr_block        = "172.31.112.0/20"
-  availability_zone = "us-east-1b"
+
+  availability_zone = "us-east-1c"
 
   tags = {
     Name = "public_subnet_b"
@@ -55,15 +57,14 @@ resource "aws_subnet" "public_subnet_b" {
 
 resource "aws_default_security_group" "default" {
   #name        = "default"
-  #description = "inbound traffic"
-
+  #description = "inbound traffic
   vpc_id = aws_default_vpc.default.id
-
   ingress {
     # SSH Port 22 allowed 
     from_port = 22
     to_port   = 22
     protocol  = "tcp"
+
     #security_groups = [aws_security_group.week21_lb.id]
     cidr_blocks = ["0.0.0.0/0"]
   }
@@ -88,45 +89,16 @@ resource "aws_default_security_group" "default" {
   }
 }
 
-resource "aws_lb" "week21_alb" {
-  name               = "week21-alb"
-  internal           = false
-  load_balancer_type = "application"
-  security_groups    = [aws_default_security_group.default.id]
-  subnets            = [aws_subnet.public_subnet_a.id, aws_subnet.public_subnet_b.id]
-}
-
-resource "aws_lb_listener" "week21_lb_listener" {
-  load_balancer_arn = aws_lb.week21_alb.arn
-  port              = "80"
-  protocol          = "HTTP"
-  default_action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.week21_tg.arn
-  }
-  #depends_on = [
-    #aws_autoscaling_group.week21_asg
-  #]
-}
-
-resource "aws_lb_target_group" "week21_tg" {
-  name        = "week21-tg"
-  target_type = "instance"
-  port        = "80"
-  protocol    = "HTTP"
-  vpc_id      = aws_default_vpc.default.id
-  
-  #depends_on = [aws_lb.week21_alb]
-}
-
 resource "aws_autoscaling_group" "week21_asg" {
+
   name             = "week21_asg"
   max_size         = 5
-  min_size         = 2
-  desired_capacity = 2
-  target_group_arns = [aws_lb_target_group.week21_tg.arn]
+  min_size         = 3
+  desired_capacity = 3
+  #target_group_arns = [aws_lb_target_group.my_tg.arn]
 
   vpc_zone_identifier = [aws_subnet.public_subnet_a.id, aws_subnet.public_subnet_b.id]
+
 
   launch_template {
     id      = aws_launch_template.week21_launch_template.id
@@ -138,15 +110,5 @@ resource "aws_autoscaling_group" "week21_asg" {
 resource "aws_default_vpc" "default" {
   tags = {
     Name = "Default VPC"
-    cidr_block = "172.31.0.0/16"
   }
 }
-
-output "security_group_id" {
-  value = aws_default_security_group.default.id
-}
-
-output "default_vpc_id" {
-  value = aws_default_vpc.default.id
-}
-
