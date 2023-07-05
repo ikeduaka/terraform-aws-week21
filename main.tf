@@ -53,7 +53,6 @@ resource "aws_subnet" "public_subnet_b" {
   }
 }
 
-
 resource "aws_default_security_group" "default" {
   #name        = "default"
   #description = "inbound traffic"
@@ -141,5 +140,13 @@ resource "aws_default_vpc" "default" {
     Name = "Default VPC"
     cidr_block = "172.31.0.0/16"
   }
+}
+
+output "security_group_id" {
+  value = aws_default_security_group.default.id
+}
+
+output "default_vpc_id" {
+  value = aws_default_vpc.default.id
 }
 

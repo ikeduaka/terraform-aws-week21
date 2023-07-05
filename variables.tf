@@ -18,3 +18,4 @@ variable "public_subnets" {
   default = [
   "public_subnet_a", "public_subnet_b"]
 }
+
