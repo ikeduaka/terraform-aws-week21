@@ -13,7 +13,6 @@ resource "aws_lb_listener" "week21_lb_listener" {
   default_action {
     type             = "forward"
     target_group_arn = aws_lb_target_group.week21_tg.arn
-    #target_groups = var.target_groups
   }
 }
 
