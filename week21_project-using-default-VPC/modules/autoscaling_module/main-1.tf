@@ -3,7 +3,7 @@ resource "aws_autoscaling_group" "week21_asg" {
   max_size         = 5
   min_size         = 2
   desired_capacity = 2
-  #target_group_arns = [aws_lb_target_group.week21_tg.arn]
+  target_group_arns = var.target_group_arns
 
   vpc_zone_identifier = var.subnets
 

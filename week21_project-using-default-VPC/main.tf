@@ -26,7 +26,7 @@ resource "aws_subnet" "public_subnet-1" {
   cidr_block              = "172.31.96.0/20"
   availability_zone       = data.aws_availability_zones.available.names[0]
   map_public_ip_on_launch = true
-  
+
   tags = {
     Name = "public_subnet-1"
   }
@@ -38,7 +38,7 @@ resource "aws_subnet" "public_subnet-2" {
   cidr_block              = "172.31.112.0/20"
   availability_zone       = data.aws_availability_zones.available.names[1]
   map_public_ip_on_launch = true
-  
+
   tags = {
     Name = "public_subnet-2"
   }
@@ -108,20 +108,35 @@ resource "random_id" "random" {
   byte_length = 8
 }
 
-#output "launch_template_id" {
-  #description = "The ID of the launch template"
-  #value       = aws_launch_template.week21_launch_template.id
-#}
+resource "aws_lb_target_group" "week21_tg" {
+  name        = "week21-tg"
+  target_type = "instance"
+  port        = "80"
+  protocol    = "HTTP"
+  vpc_id      = aws_default_vpc.default.id
+
+}
+
 
 module "asg" {
-  source  = "./modules/autoscaling_module"
+  source = "./modules/autoscaling_module"
 
   # Autoscaling group
   name = "week21_asg"
   #security_groups    = [aws_default_security_group.default.id]
-  #target_group_arns = [aws_lb_target_group.week21_tg.arn]
-  subnets            = [aws_subnet.public_subnet-1.id, aws_subnet.public_subnet-2.id]
-  
-  launch_template      = aws_launch_template.week21_launch_template.id
-}
+  target_group_arns = [aws_lb_target_group.week21_tg.arn]
+  subnets           = [aws_subnet.public_subnet-1.id, aws_subnet.public_subnet-2.id]
 
+  launch_template = aws_launch_template.week21_launch_template.id
+}
+module "alb" {
+  source = "./modules/alb_module"
+
+  #name = "week21-alb"
+
+  load_balancer_type = "application"
+
+  vpc_id            = aws_default_vpc.default.id
+  subnets           = [aws_subnet.public_subnet-1.id, aws_subnet.public_subnet-2.id]
+  security_groups   = [aws_default_security_group.default.id]
+  }
