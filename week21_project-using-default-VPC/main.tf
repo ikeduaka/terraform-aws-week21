@@ -116,7 +116,18 @@ resource "aws_lb_target_group" "week21_tg" {
   vpc_id      = aws_default_vpc.default.id
 
 }
+resource "aws_lb" "week21_alb" {
+  name               = "week21-alb"
+  internal           = false
+  load_balancer_type = var.load_balancer_type
+  security_groups    = var.security_groups
+  subnets            = [aws_subnet.public_subnet-1.id, aws_subnet.public_subnet-2.id]
+}
 
+output "lb_dns_name" {
+  description = "The DNS name of the load balancer"
+  value       = aws_lb.week21_alb.dns_name
+}
 
 module "asg" {
   source = "./modules/autoscaling_module"
@@ -136,7 +147,7 @@ module "alb" {
 
   load_balancer_type = "application"
 
-  vpc_id            = aws_default_vpc.default.id
-  subnets           = [aws_subnet.public_subnet-1.id, aws_subnet.public_subnet-2.id]
-  security_groups   = [aws_default_security_group.default.id]
-  }
+  vpc_id          = aws_default_vpc.default.id
+  subnets         = [aws_subnet.public_subnet-1.id, aws_subnet.public_subnet-2.id]
+  security_groups = [aws_default_security_group.default.id]
+}
