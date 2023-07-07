@@ -23,3 +23,4 @@ resource "aws_lb_target_group" "week21_tg" {
   protocol    = "HTTP"
   vpc_id      = var.vpc_id
   }
+  
